@@ -1,0 +1,405 @@
+
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--font-sans); }
+.hub { padding: 1.5rem 0; }
+.section-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-tertiary); margin: 0 0 10px; }
+.node-grid { display: grid; gap: 10px; }
+.node-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px 14px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.node-card:hover { border-color: var(--color-border-primary); background: var(--color-background-secondary); }
+.node-card.active { border-color: var(--color-border-info); background: var(--color-background-info); }
+.node-card.active .node-label { color: var(--color-text-info); }
+.node-card.active .node-sub { color: var(--color-text-info); opacity: 0.8; }
+.node-label { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+.node-sub { font-size: 11px; color: var(--color-text-secondary); margin: 0; }
+.tag { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 10px; margin-top: 6px; font-weight: 500; }
+.tag-actor { background: var(--color-background-warning); color: var(--color-text-warning); }
+.tag-concept { background: var(--color-background-success); color: var(--color-text-success); }
+.tag-event { background: var(--color-background-danger); color: var(--color-text-danger); }
+.tag-doc { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-secondary); }
+.tag-org { background: var(--color-background-info); color: var(--color-text-info); }
+.detail-panel { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 20px; margin-top: 10px; display: none; }
+.detail-panel.open { display: block; }
+.detail-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 6px; }
+.detail-body { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin: 0 0 12px; }
+.detail-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.detail-link { font-size: 11px; color: var(--color-text-info); cursor: pointer; border: 0.5px solid var(--color-border-info); border-radius: 4px; padding: 3px 8px; }
+.detail-link:hover { background: var(--color-background-info); }
+.divider { height: 0.5px; background: var(--color-border-tertiary); margin: 8px 0; }
+.tab-bar { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 0.5px solid var(--color-border-tertiary); padding-bottom: 0; }
+.tab { font-size: 12px; padding: 6px 12px; cursor: pointer; color: var(--color-text-secondary); border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+.tab.active { color: var(--color-text-primary); border-bottom-color: var(--color-text-primary); font-weight: 500; }
+.timeline-item { display: flex; gap: 14px; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.timeline-date { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); min-width: 80px; padding-top: 2px; }
+.timeline-content { font-size: 13px; color: var(--color-text-primary); line-height: 1.5; }
+.timeline-content em { font-style: normal; color: var(--color-text-secondary); font-size: 12px; display: block; margin-top: 2px; }
+.intro-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px 18px; margin-bottom: 20px; }
+.intro-title { font-size: 18px; font-weight: 500; margin: 0 0 6px; }
+.intro-body { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+</style>
+
+<div class="hub">
+  <div class="intro-card">
+    <p class="intro-title">La Mercancía Rara /</p>
+    <p class="intro-body">Índice de investigación sobre el <strong>Evento Proteus</strong>: una anomalía temporal que comenzó el 1–4 de abril de 2025, cuando datos financieros de décadas en el futuro aparecieron en servidores bancarios y financieros en todo el mundo. Los materiales fueron filtrados por el colectivo hacker <strong>cypherwrks</strong> desde la intranet del think tank <strong>Esparavel</strong>.</p>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="showTab('mapa')">Mapa</div>
+    <div class="tab" onclick="showTab('cronologia')">Cronología</div>
+    <div class="tab" onclick="showTab('docs')">Documentos</div>
+  </div>
+
+  <div id="tab-mapa">
+    <div class="legend">
+      <span class="tag tag-org">Organización</span>
+      <span class="tag tag-actor">Actor / Persona</span>
+      <span class="tag tag-event">Evento</span>
+      <span class="tag tag-concept">Concepto</span>
+      <span class="tag tag-doc">Documento</span>
+    </div>
+
+    <div id="detail-box" class="detail-panel"></div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 12px;">
+      
+      <div>
+        <p class="section-title">Organizaciones</p>
+        <div class="node-grid">
+          <div class="node-card" onclick="showDetail('esparavel')">
+            <p class="node-label">Esparavel</p>
+            <p class="node-sub">Think tank contratante</p>
+            <span class="tag tag-org">Organización</span>
+          </div>
+          <div class="node-card" onclick="showDetail('tpmp')">
+            <p class="node-label">TPMP / Pacific Project</p>
+            <p class="node-sub">Consorcio de bolsas transpacífico</p>
+            <span class="tag tag-org">Organización</span>
+          </div>
+          <div class="node-card" onclick="showDetail('cypherwrks')">
+            <p class="node-label">cypherwrks</p>
+            <p class="node-sub">Colectivo hacker, fuente del leak</p>
+            <span class="tag tag-org">Organización</span>
+          </div>
+          <div class="node-card" onclick="showDetail('comision')">
+            <p class="node-label">Comisión Científica de Esparavel</p>
+            <p class="node-sub">Cuerpo editorial interno</p>
+            <span class="tag tag-org">Organización</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <p class="section-title">Eventos</p>
+        <div class="node-grid">
+          <div class="node-card" onclick="showDetail('proteus')">
+            <p class="node-label">Evento Proteus</p>
+            <p class="node-sub">Anomalía temporal global, abril 2025</p>
+            <span class="tag tag-event">Evento</span>
+          </div>
+          <div class="node-card" onclick="showDetail('pacific-one')">
+            <p class="node-label">Expedición a Pacific One</p>
+            <p class="node-sub">Desaparición de Thakur, mayo 2025</p>
+            <span class="tag tag-event">Evento</span>
+          </div>
+          <div class="node-card" onclick="showDetail('disputa-editorial')">
+            <p class="node-label">Disputa editorial</p>
+            <p class="node-sub">Cartas internas, abril–mayo 2025</p>
+            <span class="tag tag-event">Evento</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p class="section-title">Actores / Personas</p>
+        <div class="node-grid">
+          <div class="node-card" onclick="showDetail('thakur')">
+            <p class="node-label">Dra. Adity Thakur</p>
+            <p class="node-sub">Investigadora principal, desaparecida</p>
+            <span class="tag tag-actor">Actor</span>
+          </div>
+          <div class="node-card" onclick="showDetail('arellano')">
+            <p class="node-label">Dr. Rodrigo Arellano-Voronov</p>
+            <p class="node-sub">Académico comisionado, denunciante</p>
+            <span class="tag tag-actor">Actor</span>
+          </div>
+          <div class="node-card" onclick="showDetail('kessler')">
+            <p class="node-label">Dr. Émile Kessler</p>
+            <p class="node-sub">Secretario de la Comisión Científica</p>
+            <span class="tag tag-actor">Actor</span>
+          </div>
+          <div class="node-card" onclick="showDetail('leighton')">
+            <p class="node-label">Leighton Fable</p>
+            <p class="node-sub">Asistente de Thakur</p>
+            <span class="tag tag-actor">Actor</span>
+          </div>
+          <div class="node-card" onclick="showDetail('vallcorba')">
+            <p class="node-label">Vallcorba & Cheung</p>
+            <p class="node-sub">Investigadores externos, UB / BSE</p>
+            <span class="tag tag-actor">Actor</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <p class="section-title">Conceptos clave</p>
+        <div class="node-grid">
+          <div class="node-card" onclick="showDetail('retroactualizacion')">
+            <p class="node-label">Retroactualización</p>
+            <p class="node-sub">Colapso prematuro de la posibilidad futura</p>
+            <span class="tag tag-concept">Concepto</span>
+          </div>
+          <div class="node-card" onclick="showDetail('presecuencia')">
+            <p class="node-label">Presecuencia</p>
+            <p class="node-sub">Precursor temporal que produce su propia condición</p>
+            <span class="tag tag-concept">Concepto</span>
+          </div>
+          <div class="node-card" onclick="showDetail('immanence-breaking')">
+            <p class="node-label">Evento que rompe la inmanencia</p>
+            <p class="node-sub">Hipótesis de Arellano-Voronov sobre Proteus</p>
+            <span class="tag tag-concept">Concepto</span>
+          </div>
+          <div class="node-card" onclick="showDetail('capital-ficticio')">
+            <p class="node-label">Capital ficticio & tiempo financiero</p>
+            <p class="node-sub">Marco teórico del proyecto</p>
+            <span class="tag tag-concept">Concepto</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-cronologia" style="display:none">
+    <div class="timeline-item">
+      <span class="timeline-date">1971</span>
+      <div class="timeline-content">Fin de Bretton Woods. Surgimiento del capital ficticio y los derivados financieros. <em>Contexto estructural del proyecto.</em></div>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-date">Antes 2025</span>
+      <div class="timeline-content">El consorcio TPMP lanza el <strong>Proyecto Pacific</strong>: red de estaciones en el meridiano 180 para reducir la latencia financiera transpacífica a velocidad de luz. <em>Pacific One: primera estación retransmisora.</em></div>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-date">Abr 1–4, 2025</span>
+      <div class="timeline-content"><strong>Evento Proteus</strong>: datos financieros de 2039–2042 y 2068–2073 aparecen en servidores bancarios globales. Rotterdam (importaciones de 2071), criptomonedas desconocidas en rigs de minería en Sudamérica y África Occidental. <em>La anomalía desestabiliza los supuestos de especulación.</em></div>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-date">Abr 4–14, 2025</span>
+      <div class="timeline-content">Esparavel recibe encargo del Departamento de Estado de EE.UU. y el Ministerio de RREE chino. Comisión científica confirma el alcance e inicia la recopilación de memorandos. <em>Contribuyentes comisionados para proponer modelos explicativos competidores.</em></div>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-date">Abr 15–22, 2025</span>
+      <div class="timeline-content">Recepción de memorandos, redacción de síntesis (v0.6 → v1.0). Decisión editorial: presentar una narrativa unificada en vez de modelos paralelos. <em>Thakur como Lead drafter/synthesist.</em></div>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-date">Abr 23, 2025</span>
+      <div class="timeline-content">Presentación del informe <em>"A Single Time: Proteus as a Consequence of the Temporal Merger of Global Financial Markets"</em> a la Comisión. <em>Sin circulación previa a todos los autores.</em></div>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-date">Abr 25–30, 2025</span>
+      <div class="timeline-content"><strong>Disputa editorial</strong>: Arellano-Voronov presenta queja formal ante Kessler. Denuncia que su hipótesis de Proteus como "evento que rompe la inmanencia" fue eliminada y reemplazada por emergentismo genérico. Intercambio de cartas con Thakur. <em>Correos filtrados por cypherwrks (Leaked-Mails1).</em></div>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-date">May 2, 2025</span>
+      <div class="timeline-content">Thakur delega la coordinación a Leighton Fable. Anuncia viaje a <strong>Pacific One</strong>. <em>Última comunicación conocida antes de su desaparición.</em></div>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-date">Mayo, 2025</span>
+      <div class="timeline-content"><strong>Desaparición de la Dra. Adity Thakur</strong> y su equipo durante la expedición a Pacific One. <em>Tratada en secciones 4 y 5 del Informe 1 de Esparavel.</em></div>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-date">Oct 23, 2025</span>
+      <div class="timeline-content">cypherwrks publica los archivos en cypherwrks.org. Dos informes, cartas de presentación y servicios, carpetas de noticias y capturas. <em>TPMP.org desaparece de internet poco después.</em></div>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-date">Abr 8, 2026</span>
+      <div class="timeline-content">cypherwrks publica <strong>Leaked-Mails1</strong>: correspondencia interna entre Arellano-Voronov, Kessler, Thakur y Fable (25 abr – 2 may 2025). <em>Nuevos documentos del repositorio: La Mercancía Rara.</em></div>
+    </div>
+    <div class="timeline-item">
+      <span class="timeline-date">2025 (publicación académica)</span>
+      <div class="timeline-content">Vallcorba & Cheung publican <em>"Retroactualización y presecuencias"</em> (UB / BSE), introduciendo el marco conceptual que no depende de retrocausación sino de colapso probabilístico. <em>Citan el informe Thakur et al. (2026).</em></div>
+    </div>
+  </div>
+
+  <div id="tab-docs" style="display:none">
+    <div class="node-grid">
+      <div class="node-card" onclick="showDetail('informe1')">
+        <p class="node-label">Informe 1 de Esparavel</p>
+        <p class="node-sub">Cronología preliminar, testimonios, diario de Thakur</p>
+        <span class="tag tag-doc">Documento</span>
+      </div>
+      <div class="node-card" onclick="showDetail('informe2')">
+        <p class="node-label">Informe 2 de Esparavel</p>
+        <p class="node-sub">Trasfondo del Proyecto Pacific, cibernética de tercer orden</p>
+        <span class="tag tag-doc">Documento</span>
+      </div>
+      <div class="node-card" onclick="showDetail('leaked-mails')">
+        <p class="node-label">Leaked-Mails1</p>
+        <p class="node-sub">Correos internos Arellano-Voronov / Thakur / Kessler</p>
+        <span class="tag tag-doc">Documento</span>
+      </div>
+      <div class="node-card" onclick="showDetail('mails-scan')">
+        <p class="node-label">Mails_1-scan</p>
+        <p class="node-sub">Versión escaneada (con anotaciones manuscritas)</p>
+        <span class="tag tag-doc">Documento</span>
+      </div>
+      <div class="node-card" onclick="showDetail('vallcorba-paper')">
+        <p class="node-label">Retroactualización y presecuencias</p>
+        <p class="node-sub">Artículo académico Vallcorba & Cheung (UB/BSE)</p>
+        <span class="tag tag-doc">Documento</span>
+      </div>
+      <div class="node-card" onclick="showDetail('collapsible-html')">
+        <p class="node-label">collapsible.html</p>
+        <p class="node-sub">Índice del proyecto La Mercancía Rara</p>
+        <span class="tag tag-doc">Documento</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const details = {
+  esparavel: {
+    title: "Esparavel (think tank)",
+    body: "Think tank con sede en el Reino Unido, con oficinas en Ámsterdam, Shanghái y Buenos Aires. Se especializa en X-Risk, Economía del Apocalipsis y Policrisis. Contratado por el Departamento de Estado de EE.UU. y el Ministerio de RREE chino para investigar las anomalías del Evento Proteus. Su nombre (del español 'casting net', red de pesca) sugiere su función de captura de señales dispersas. Su dominio es esparavel.xyz.",
+    links: ["Comisión Científica", "Informe 1", "Informe 2", "Proyecto Pacific"]
+  },
+  tpmp: {
+    title: "TPMP / Proyecto Pacific",
+    body: "Trans-Pacific Marketplace Consortium: consorcio de las bolsas de Los Ángeles, Seattle, Vancouver, Tokio, Shanghái y Hong Kong, junto con Global Express Platform y Sumitomo. Su misión: crear un 'archipiélago de hubs' a lo largo del meridiano 180 para reducir la latencia financiera transpacífica. La estación Pacific One fue construida en dicho meridiano. El sitio tpmp.org desapareció en octubre 2025. La reducción de latencia a velocidad de luz habría producido —accidentalmente o no— la fusión temporal de mercados que dio origen a Proteus.",
+    links: ["Evento Proteus", "Pacific One", "Thakur"]
+  },
+  cypherwrks: {
+    title: "cypherwrks (colectivo hacker)",
+    body: "Colectivo hacker que obtuvo acceso a la intranet de Esparavel y publicó los archivos de la carpeta //PROTEUS en cypherwrks.org (también deletreado cypherwerks). Publicaron materiales en dos oleadas: octubre 2025 (informes y cartas) y abril 2026 (Leaked-Mails1). En el índice del proyecto se los describe como 'leak original, leak a Esparavel'. Su página lleva sin movimiento ~3 meses al momento del último registro conocido.",
+    links: ["Leaked-Mails1", "cypherwrks.org"]
+  },
+  comision: {
+    title: "Comisión Científica de Esparavel",
+    body: "Cuerpo editorial interno de Esparavel que supervisa los informes relacionados con Proteus. Su secretario es el Dr. Émile Kessler. Encargó a múltiples académicos memorandos con hipótesis competidoras para el Evento Proteus. La decisión de sintetizar esos memorandos en una narrativa unificada —en vez de presentar modelos paralelos— generó la disputa editorial con Arellano-Voronov.",
+    links: ["Kessler", "Thakur", "Arellano-Voronov", "Informe 1"]
+  },
+  proteus: {
+    title: "Evento Proteus",
+    body: "Anomalía global que comenzó entre el 1 y 4 de abril de 2025. Se manifestó como la aparición de datos financieros provenientes de al menos dos puntos futuros (2039–2042 y 2068–2073) en servidores bancarios, dark pools y rigs de minería en todo el mundo. Los registros incluían préstamos sindicados de empresas eléctricas y de gas en Ucrania y Bielorrusia, transacciones portuarias de Rotterdam con fechas de 2071, y tres criptomonedas desconocidas en 11 países. Aparentemente originado en Pacific One, la primera estación retransmisora del Proyecto Pacific.",
+    links: ["Pacific Project", "Retroactualización", "Presecuencia", "Informe 1"]
+  },
+  'pacific-one': {
+    title: "Expedición a Pacific One / Desaparición de Thakur",
+    body: "En mayo de 2025, la Dra. Adity Thakur viajó a Pacific One, la primera estación retransmisora del Proyecto Pacific ubicada en el meridiano 180. Ella y su equipo desaparecieron durante esta expedición. Su desaparición está documentada en las secciones 4 y 5 del Informe 1 de Esparavel, junto con fragmentos de su diario y sus notas preliminares sobre Proteus. Es el acontecimiento central del proyecto.",
+    links: ["Thakur", "Pacific Project", "Informe 1"]
+  },
+  'disputa-editorial': {
+    title: "Disputa editorial (abril–mayo 2025)",
+    body: "Entre el 25 de abril y el 2 de mayo de 2025, el Dr. Arellano-Voronov presentó una queja formal ante el Secretario Kessler por la misrepresentación de su hipótesis en el informe 'A Single Time'. La disputa revela modelos contrapuestos de Proteus: el de Thakur (tiempo financiero unificado emergente) vs. el de Arellano-Voronov (Proteus como evento que rompe la inmanencia, con la topología de una cuenca temporal única). La correspondencia fue filtrada por cypherwrks en abril 2026.",
+    links: ["Arellano-Voronov", "Thakur", "Kessler", "Leaked-Mails1"]
+  },
+  thakur: {
+    title: "Dra. Adity Thakur",
+    body: "Investigadora principal del Proyecto Proteus dentro de Esparavel. Lead drafter/synthesist del informe 'A Single Time'. Autora del concepto de 'presecuencia' (citado por Vallcorba & Cheung). Desapareció en mayo de 2025 durante la expedición a Pacific One. El Informe 1 incluye transcripciones de su diario. Los correos filtrados muestran su postura: defender la síntesis unificada frente a la queja de Arellano-Voronov, ofreciendo finalmente un addendum al expediente.",
+    links: ["Evento Proteus", "Pacific One", "Disputa editorial", "Informe 1"]
+  },
+  arellano: {
+    title: "Dr. Rodrigo Arellano-Voronov",
+    body: "Académico comisionado por Esparavel para el proyecto Proteus. Su hipótesis central: Proteus es un 'evento que rompe la inmanencia', un umbral en el que la temporalidad del mercado experimenta canalización hacia una única cuenca operacional, colapsando la pluralidad temporal previa en un régimen unificado. Denunció que esta tesis fue eliminada del informe final y reemplazada por un emergentismo genérico. Propuso que los mercados se comportan como 'campos relacionales metaestables' y las materias primas como 'nodos de alta densidad'. Su email: r.arellano-voronov@esparavel.xyz.",
+    links: ["Thakur", "Kessler", "Evento que rompe la inmanencia", "Leaked-Mails1"]
+  },
+  kessler: {
+    title: "Dr. Émile Kessler",
+    body: "Secretario de la Comisión Científica de Esparavel. Receptor de la queja formal de Arellano-Voronov. Actuó como mediador institucional en la disputa editorial: solicitó a Thakur el detalle del flujo editorial y ofreció las vías procedimentales disponibles para incorporar las disidencias al expediente. Su email: secretary.scicomm@esparavel.xyz. En los documentos escaneados, su nombre aparece redactado en algunas ocurrencias.",
+    links: ["Comisión Científica", "Arellano-Voronov", "Thakur"]
+  },
+  leighton: {
+    title: "Leighton Fable",
+    body: "Asistente de la Dra. Thakur. Aparece en copia de los últimos correos (mayo 2025) cuando Thakur delega la coordinación antes de su viaje a Pacific One. Es descrito como 'al tanto de la correspondencia' y capaz de coordinar los pasos siguientes sobre formato de envío, indexación y enrutamiento. Su email: l.fable@esparavel.xyz.",
+    links: ["Thakur", "Disputa editorial"]
+  },
+  vallcorba: {
+    title: "Cristina Vallcorba & Rafael Cheung",
+    body: "Investigadores del Departamento de Economía de la Universitat de Barcelona y la Barcelona School of Economics. Publicaron 'Retroactualización y presecuencias: Una nueva perspectiva del tiempo financiero a la luz del evento Proteus'. Introducen los dos conceptos centrales del proyecto. No tienen vínculos declarados con Esparavel ni reciben financiación del proyecto. Citan el informe Thakur et al. (2026) y trabajan desde la sociología financiera y la física cuántica como analogía.",
+    links: ["Retroactualización", "Presecuencia", "Capital ficticio"]
+  },
+  retroactualizacion: {
+    title: "Retroactualización",
+    body: "Concepto propuesto por Vallcorba & Cheung. A diferencia de la retrocausación (que postula señales que viajan del futuro al pasado), la retroactualización describe la actualización prematura de un estado futuro dentro del presente a través del colapso de la distribución de posibilidades. El futuro no envía señales: se vuelve epistémicamente real porque el presente absorbe información que lo revela. No implica paradoja causal. Análogo al colapso de la función de onda en física cuántica.",
+    links: ["Presecuencia", "Evento Proteus", "Capital ficticio"]
+  },
+  presecuencia: {
+    title: "Presecuencia",
+    body: "Concepto tomado de 'Adity et al.' (Thakur). Nombra al precursor temporal que, al revelar las condiciones futuras por adelantado, da forma a la dinámica misma que más tarde las provocará. En el caso de Proteus: el evento se precede a sí mismo al actualizar sus propias condiciones futuras. No es un efecto del colapso futuro, sino el acontecimiento que instala ese colapso como horizonte dominante de posibilidad.",
+    links: ["Retroactualización", "Thakur", "Evento Proteus"]
+  },
+  'immanence-breaking': {
+    title: "Evento que rompe la inmanencia (hipótesis Arellano-Voronov)",
+    body: "Designación propuesta por Arellano-Voronov para Proteus: no es una perturbación dentro del régimen de mercado existente, sino una ruptura en la topología temporal interna del sistema. La temporalidad del mercado experimenta 'canalización hacia una única cuenca operacional', colapsando la pluralidad temporal previa. Contrasta con la posición emergentista del informe oficial ('Tiempo Financiero Unificado' como subproducto de la sincronización). Esta distinción es el núcleo de la disputa editorial.",
+    links: ["Arellano-Voronov", "Disputa editorial", "Retroactualización"]
+  },
+  'capital-ficticio': {
+    title: "Capital ficticio & tiempo financiero",
+    body: "Marco teórico de fondo, desarrollado por Vallcorba & Cheung. El capital financiero contemporáneo opera sobre una temporalidad propia: los derivados comprimen, invierten y manipulan el tiempo. El valor de la tierra depende del valor estimado de la cosecha futura (B determina A: retrocausación formal). Proteus radicaliza esta lógica: ya no se trata de abstracciones financieras dentro del contrato, sino de una instancia 'real' de datos futuros en el presente.",
+    links: ["Retroactualización", "Evento Proteus", "Vallcorba & Cheung"]
+  },
+  informe1: {
+    title: "Informe 1 de Esparavel",
+    body: "Documento: 'Informe de la Comisión Científica a Miembros con Acceso Naranja'. Cronología preliminar del evento Proteus, testimonios sobre alteraciones de materias primas, fragmentos del informe 'A Single Time: Proteus as a Consequence of the Temporal Merger of Global Financial Markets'. Incluye transcripciones del diario de la Dra. Thakur y sus apuntes sobre la naturaleza del fenómeno. Trata la desaparición de Thakur en las secciones 4 y 5.",
+    links: ["Thakur", "Evento Proteus", "Esparavel"]
+  },
+  informe2: {
+    title: "Informe 2 de Esparavel",
+    body: "Documento: 'Informe de la Comisión Tecnocientífica de Esparavel tras la desaparición de la Profesora Adity Thakur'. Aborda el trasfondo del Proyecto Pacific, propone una cibernética de tercer orden y una caracterización geométrica del tiempo para entender el fenómeno que aparentemente emana de la estación Pacific One.",
+    links: ["Thakur", "Pacific Project", "Esparavel"]
+  },
+  'leaked-mails': {
+    title: "Leaked-Mails1",
+    body: "Paquete de correos electrónicos internos del servidor @esparavel.xyz, filtrados por cypherwrks el 8 de abril de 2026. Período: 25 de abril al 2 de mayo de 2025. Participantes: Arellano-Voronov, Kessler, Thakur, Leighton Fable. Documenta la disputa editorial y revela tres modelos contrapuestos de Proteus. El documento PDF adjunto tiene nombres redactados; la versión escaneada (Mails_1-scan) tiene anotaciones manuscritas en el margen.",
+    links: ["Arellano-Voronov", "Thakur", "Kessler", "Disputa editorial"]
+  },
+  'mails-scan': {
+    title: "Mails_1-scan (versión escaneada)",
+    body: "Versión física escaneada de los correos filtrados. Contiene las mismas comunicaciones que Leaked-Mails1 pero con anotaciones manuscritas en el margen (visible en la página 6: anotaciones al costado del argumento de Arellano-Voronov sobre la 'alethic techné' de Heidegger) y una URL anotada a mano que apunta a un repositorio de GitHub. Puede ser una copia de trabajo de un investigador externo.",
+    links: ["Leaked-Mails1", "Arellano-Voronov"]
+  },
+  'vallcorba-paper': {
+    title: "Retroactualización y presecuencias (artículo académico)",
+    body: "Artículo de Cristina Vallcorba (UB) y Rafael Cheung (BSE). Propone los conceptos de retroactualización y presecuencia como alternativa a la retrocausación para explicar las anomalías de Proteus. Parte del fin de Bretton Woods (1971) y el surgimiento del capital ficticio para llegar a la pregunta: ¿qué ocurre cuando se elimina la incertidumbre y el futuro aparece como dato concreto? Incluye analogías con la física cuántica (experimento de doble rendija, borradores cuánticos).",
+    links: ["Retroactualización", "Presecuencia", "Vallcorba & Cheung"]
+  },
+  'collapsible-html': {
+    title: "collapsible.html / La Mercancía Rara",
+    body: "Archivo HTML que funciona como índice navegable del proyecto. Organiza el material en cinco categorías: SEÑALES (PDFs, documentos filtrados, foros), OPERADORES (pensadores, colectivos, pseudónimos), MÁQUINAS (diagramas, conceptos, algoritmos), SITIOS (foros, archivos, dominios extintos) e INCIDENTES (noticias, anomalías, errores). El único sitio documentado en SITIOS es cypherwrks.org. El índice fue construido a partir de materiales heterogéneos, incluyendo los del colectivo hacker.",
+    links: ["cypherwrks", "Esparavel"]
+  }
+};
+
+let activeCard = null;
+
+function showDetail(id) {
+  const d = details[id];
+  if (!d) return;
+  const box = document.getElementById('detail-box');
+  
+  if (activeCard) activeCard.classList.remove('active');
+  const cards = document.querySelectorAll('.node-card');
+  cards.forEach(c => {
+    if (c.getAttribute('onclick') === `showDetail('${id}')`) {
+      c.classList.add('active');
+      activeCard = c;
+    }
+  });
+  
+  box.innerHTML = `
+    <p class="detail-title">${d.title}</p>
+    <p class="detail-body">${d.body}</p>
+    ${d.links && d.links.length ? `<div class="detail-links">${d.links.map(l => `<span class="detail-link">→ ${l}</span>`).join('')}</div>` : ''}
+  `;
+  box.classList.add('open');
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function showTab(tab) {
+  document.getElementById('tab-mapa').style.display = tab === 'mapa' ? '' : 'none';
+  document.getElementById('tab-cronologia').style.display = tab === 'cronologia' ? '' : 'none';
+  document.getElementById('tab-docs').style.display = tab === 'docs' ? '' : 'none';
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.textContent.toLowerCase().includes(tab === 'cronologia' ? 'cron' : tab));
+  });
+}
+</script>
