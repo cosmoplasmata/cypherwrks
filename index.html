@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archivo Proteus // La Mercancía Rara</title>
+    <style>
+        :root {
+            --bg-page: #fdfaf6;
+            --bg-card: #ffffff;
+            --text-main: #2d2a26;
+            --text-sub: #5d5a56;
+            --border: #e2ded0;
+            
+            /* Paleta sutil por categorías */
+            --color-org: #eef6ff;    --border-org: #b3cde0;
+            --color-actor: #fff9e6;  --border-actor: #e6d5a3;
+            --color-event: #fff0f0;  --border-event: #e0b3b3;
+            --color-concept: #f5edff; --border-concept: #c7b3e0;
+            --color-doc: #f0fff4;     --border-doc: #b3e0bc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'EB Garamond', 'Garamond', 'Georgia', serif; 
+            background-color: var(--bg-page); 
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 950px; margin: 0 auto; }
+
+        header { 
+            border-bottom: 1px solid var(--text-main); 
+            padding-bottom: 25px; 
+            margin-bottom: 30px; 
+        }
+        header h1 { font-size: 2rem; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+        header p { font-size: 1rem; font-style: italic; color: var(--text-sub); max-width: 800px; margin-top: 10px; }
+
+        /* NAVEGACIÓN */
+        .tab-bar { display: flex; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid var(--border); }
+        .tab { 
+            padding: 10px 0; cursor: pointer; font-size: 1rem; 
+            color: var(--text-sub); border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab.active { color: var(--text-main); border-bottom-color: var(--text-main); font-weight: bold; }
+
+        .content-section { display: none; animation: fadeIn 0.3s ease; }
+        .content-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* GRID Y TARJETAS */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .label-cat { 
+            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; 
+            margin-bottom: 15px; color: var(--text-sub); border-bottom: 1px solid var(--border); padding-bottom: 5px;
+        }
+
+        .card-list { display: flex; flex-direction: column; gap: 12px; }
+        .card { 
+            background: var(--bg-card); border: 1px solid var(--border); 
+            padding: 18px; border-radius: 2px; cursor: pointer;
+            transition: all 0.2s;
+            border-left-width: 5px;
+        }
+        .card:hover { transform: translateY(-2px); border-color: var(--text-main); }
+        
+        .card h3 { font-size: 1.1rem; margin-bottom: 4px; font-weight: bold; }
+        .card p { font-size: 0.9rem; color: var(--text-sub); }
+
+        /* CLASES DE COLOR */
+        .c-org { background-color: var(--color-org); border-left-color: var(--border-org); }
+        .c-actor { background-color: var(--color-actor); border-left-color: var(--border-actor); }
+        .c-event { background-color: var(--color-event); border-left-color: var(--border-event); }
+        .c-concept { background-color: var(--color-concept); border-left-color: var(--border-concept); }
+        .c-doc { background-color: var(--color-doc); border-left-color: var(--border-doc); }
+
+        /* PANEL DE DETALLE */
+        .detail-panel { 
+            background: #fff; border: 1px solid var(--text-main); 
+            padding: 25px; margin-bottom: 35px; display: none;
+        }
+        .detail-panel.open { display: block; }
+        .detail-panel h2 { font-size: 1.4rem; margin-bottom: 12px; border-bottom: 1px dotted var(--text-sub); padding-bottom: 8px; }
+        .detail-panel p { font-size: 1.05rem; margin-bottom: 20px; text-align: justify; }
+
+        /* CRONOLOGÍA */
+        .timeline { margin-left: 20px; border-left: 1px solid var(--border); padding-left: 35px; }
+        .tl-item { position: relative; margin-bottom: 30px; }
+        .tl-item::before { 
+            content: ""; position: absolute; left: -40px; top: 10px; 
+            width: 8px; height: 8px; background: var(--bg-page); border: 1px solid var(--text-main); border-radius: 50%;
+        }
+        .tl-date { font-weight: bold; font-size: 1rem; color: var(--text-main); }
+        .tl-desc { font-size: 1rem; color: var(--text-sub); margin-top: 4px; }
+        .tl-desc em { font-size: 0.9rem; display: block; margin-top: 3px; color: #888; }
+
+        /* SECCIÓN DOCUMENTOS */
+        .quick-access { background: #fff; border: 1px solid var(--text-main); padding: 25px; margin-bottom: 30px; }
+        .link-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .a-link { 
+            text-decoration: none; color: var(--text-main); font-size: 0.95rem; 
+            padding: 10px 15px; border: 1px solid var(--border); display: block; background: var(--bg-page);
+            transition: 0.2s;
+        }
+        .a-link:hover { background: var(--color-org); border-color: var(--text-main); padding-left: 20px; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>La Mercancía Rara / Índice</h1>
+        <p>Una herramienta de navegación diseñada para orientar la consulta interna entre la cronología de los hechos, los actores involucrados y el inventario de documentos filtrados.</p>
+    </header>
+
+    <div class="tab-bar">
+        <div class="tab active" onclick="switchTab('mapa')">MAPA CONCEPTUAL</div>
+        <div class="tab" onclick="switchTab('cronologia')">CRONOLOGÍA</div>
+        <div class="tab" onclick="switchTab('docs')">DOCUMENTOS Y ENLACES</div>
+    </div>
+
+    <section id="mapa" class="content-section active">
+        <div id="detail-box" class="detail-panel"></div>
+        <div class="grid">
+            <div class="col">
+                <div class="label-cat">Organizaciones</div>
+                <div class="card-list" id="org-list"></div>
+                <br><br>
+                <div class="label-cat">Eventos e Incidentes</div>
+                <div class="card-list" id="event-list"></div>
+            </div>
+            <div class="col">
+                <div class="label-cat">Actores Clave</div>
+                <div class="card-list" id="actor-list"></div>
+                <br><br>
+                <div class="label-cat">Conceptos Técnicos</div>
+                <div class="card-list" id="concept-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cronologia" class="content-section">
+        <div class="timeline" id="tl-list"></div>
+    </section>
+
+    <section id="docs" class="content-section">
+        <div class="quick-access">
+            <div class="label-cat">Acceso Rápido (cypherwrks.org)</div>
+            <div class="link-grid">
+                <a href="https://cypherwrks.org/Readme.html" class="a-link" target="_blank">→ README_Principal.html</a>
+                <a href="https://cypherwrks.org/FAQs.html" class="a-link" target="_blank">→ FAQs_Proteus.html</a>
+                <a href="https://cypherwrks.org/carta-presentacion.pdf" class="a-link" target="_blank">→ Carta de Presentación.pdf</a>
+                <a href="https://cypherwrks.org/carta-servicios.pdf" class="a-link" target="_blank">→ Carta de Servicios.pdf</a>
+                <a href="https://cypherwrks.org/Informe-1.pdf" class="a-link" target="_blank">→ Informe 1: Cronología y Testimonios</a>
+                <a href="https://cypherwrks.org/Informe-2.pdf" class="a-link" target="_blank">→ Informe 2: Infraestructura y Cibernética</a>
+                <a href="https://cypherwrks.org/Leeme-leaks1.html" class="a-link" target="_blank">→ Leeme Leaks (Contexto cypherwrks)</a>
+                <a href="https://cypherwrks.org/Leaked-Mails1_es.html" class="a-link" target="_blank">→ Leaked Mails 1 (Versión ES)</a>
+                <a href="https://docs.google.com/document/d/1RTjVrjvujY7XgHxLI38_OYbu6U5U4qbXrt1BWbHYLdw/edit?tab=t.0" class="a-link" target="_blank" style="background: #fff8e1;">→ Retroactualización y Presecuencias (Paper Completo)</a>
+            </div>
+        </div>
+        <div class="card-list" id="full-doc-list"></div>
+    </section>
+</div>
+
+<script>
+    // BASE DE DATOS ORIGINAL ÍNTEGRA
+    const db = {
+        org: [
+            { t: 'Esparavel', s: 'Think tank contratante', d: 'Think tank con sede en el Reino Unido, con oficinas en Ámsterdam, Shanghái y Buenos Aires. Se especializa en X-Risk, Economía del Apocalipsis y Policrisis. Contratado por el Departamento de Estado de EE.UU. y el Ministerio de RREE chino para investigar las anomalías del Evento Proteus. Su dominio es esparavel.xyz.', c: 'c-org' },
+            { t: 'TPMP / Pacific Project', s: 'Consorcio de bolsas transpacífico', d: "Trans-Pacific Marketplace Consortium: consorcio de las bolsas de Los Ángeles, Seattle, Vancouver, Tokio, Shanghái y Hong Kong, junto con Global Express Platform y Sumitomo. Su misión: crear un 'archipiélago de hubs' a lo largo del meridiano 180 para reducir la latencia financiera transpacífica. La estación Pacific One fue construida en dicho meridiano.", c: 'c-org' },
+            { t: '|cypherwrks', s: 'Colectivo hacker, fuente del leak', d: "Colectivo hacker que obtuvo acceso a la intranet de Esparavel y publicó los archivos de la carpeta //PROTEUS en cypherwrks.org. Publicaron materiales en dos oleadas: octubre 2025 y abril 2026. Se los describe como 'leak original'.", c: 'c-org' },
+           { t: 'V( )RTX', s: ‘Traductores de cypherwrks‘, d: 'Cuerpo editorial interno de Esparavel que supervisa los informes relacionados con Proteus. Su secretario es el Dr. Émile Kessler. Encargó a múltiples académicos memorandos con hipótesis competidoras para el Evento Proteus'.", c: 'c-org' }
+            { t: 'Comisión Científica de Esparavel', s: 'Cuerpo editorial interno', d: 'Colectivo de traducción que ha trabajado en la versión en español de materiales filtrados por |cypherwrks.', c: 'c-org' }
+        ],
+        actor: [
+            { t: 'Dra. Adity Thakur', s: 'Investigadora principal, desaparecida', d: "Investigadora principal del Proyecto Proteus dentro de Esparavel. Lead drafter del informe 'A Single Time'. Autora del concepto de 'presecuencia'. Desapareció en mayo de 2025 durante la expedición a Pacific One.", c: 'c-actor' },
+            { t: 'Dr. Rodrigo Arellano-Voronov', s: 'Académico comisionado, denunciante', d: "Académico comisionado por Esparavel. Su hipótesis central: Proteus es un 'evento que rompe la inmanencia'. Denunció que su tesis fue eliminada del informe final y reemplazada por un *garden-variety emergentism*.", c: 'c-actor' },
+            { t: 'Dr. Émile Kessler', s: 'Secretario de la Comisión Científica', d: 'Secretario de la Comisión Científica de Esparavel. Receptor de la queja formal de Arellano-Voronov. Actuó como mediador institucional en la disputa editorial.', c: 'c-actor' },
+            { t: 'Leighton Fable', s: 'Asistente de Thakur', d: "Asistente de la Dra. Thakur. Aparece en copia de los últimos correos (mayo 2025) cuando Thakur delega la coordinación antes de su viaje a Pacific One.", c: 'c-actor' },
+            { t: 'Vallcorba & Cheung', s: 'Investigadores externos, UB / BSE', d: "Investigadores de la Universitat de Barcelona y la Barcelona School of Economics. Publicaron 'Retroactualización y presecuencias', introduciendo el marco conceptual que no depende de retrocausación.", c: 'c-actor' }
+        ],
+        event: [
+            { t: 'Evento Proteus', s: 'Anomalía temporal global, abril 2025', d: 'Anomalía global manifestada como la aparición de datos financieros provenientes del futuro (2039–2042 y 2068–2073) en servidores bancarios, dark pools y rigs de minería en todo el mundo.', c: 'c-event' },
+            { t: 'Expedición a Pacific One', s: 'Desaparición de Thakur, mayo 2025', d: 'En mayo de 2025, la Dra. Thakur viajó a la primera estación retransmisora del Proyecto Pacific ubicada en el meridiano 180. Ella y su equipo desaparecieron durante esta expedición.', c: 'c-event' },
+            { t: 'Disputa editorial', s: 'Cartas internas, abril–mayo 2025', d: "Conflicto entre el 25 de abril y el 2 de mayo de 2025 por la misrepresentación de la hipótesis de Arellano-Voronov en el informe 'A Single Time'. Revela modelos contrapuestos sobre la naturaleza de Proteus.", c: 'c-event' }
+        ],
+        concept: [
+            { t: 'Retroactualización', s: 'Colapso prematuro de la posibilidad futura', d: 'la actualización prematura de un estado futuro en el presente debido al colapso de la distribución de posibilidades, donde el presente se satura de información sobre un porvenir determinado. No implica que el futuro "envíe" señales, sino que un estado futuro se vuelve epistémicamente real y determinante antes de su desarrollo cronológico', c: 'c-concept' },
+            { t: 'Presecuencia', s: 'Precursor temporal que produce su propia condición', d: 'Se define como un precursor temporal que, al revelar condiciones futuras por adelantado, moldea las dinámicas presentes que terminarán provocando esos mismos hechos. Funciona como un acontecimiento que se precede a sí mismo, instalando un evento futuro como el horizonte dominante de la posibilidad actual.', c: 'c-concept' },
+            { t: 'Evento que rompe la inmanencia', s: 'Hipótesis de Arellano-Voronov', d: 'Es un umbral en el que la pluralidad de temporalidades del mercado colapsa en una cuenca operativa única, unificando el régimen temporal bajo un solo estándar. Representa el momento en que la tecnología financiera deja de simplemente "revelar" el tiempo para empezar a producir una nueva temporalidad.', c: 'c-concept' },
+            { t: 'Capital ficticio & tiempo financiero', s: 'Marco teórico del proyecto', d: 'El capital ficticio es valor generado por la especulación y flujos digitales que estructuran la economía real en lugar de ser impulsados por ella. El tiempo financiero es una temporalidad producida por el propio sistema económico para organizar sus operaciones, cuya variable principal no es el tiempo termodinámico, sino la volatilidad de los instrumentos financieros', c: 'c-concept' }
+        ],
+        
+        timeline: [
+            { yr: '1971', txt: 'Fin de Bretton Woods.', em: 'Surgimiento del capital ficticio y los derivados financieros.' },
+            { yr: 'Antes 2025', txt: 'El consorcio TPMP lanza el Proyecto Pacific.', em: 'Red de estaciones en el meridiano 180 para latencia cero.' },
+            { yr: 'Abr 1, 2025', txt: 'Pacific One.', em: 'Puesta de marcha de Pacific One, la estación central del proyecto Pacific (ubicada en las coordenadas 35N, 180E).' },
+            { yr: 'Abr 1–4, 2025', txt: 'Evento Proteus.', em: 'Aparición de datos financieros de 2039-2042 y 2068-2073 en servidores globales.' },
+            { yr: 'Abr 23, 2025', txt: 'Presentación del informe "A Single Time".', em: 'Síntesis oficial presentada a la Comisión sin circulación previa.' },
+            { yr: 'Abr 25–30, 2025', txt: 'Inicio de la Disputa Editorial.', em: 'Arellano-Voronov denuncia la eliminación de su hipótesis de inmanencia.' },
+            { yr: 'Mayo, 2025', txt: 'Desaparición de la Dra. Adity Thakur.', em: 'Pérdida de contacto durante la expedición a la estación Pacific One.' },
+            { yr: 'Oct 23, 2025', txt: 'Primer Leak de cypherwrks.', em: 'Publicación de los informes y desaparición del sitio tpmp.org.' },
+            { yr: 'Abr 8, 2026', txt: 'Publicación de Leaked-Mails1.', em: 'Se revela la correspondencia interna sobre el conflicto editorial.' }
+        ]
+    };
+
+    function renderCards(cat, elementId) {
+        const list = document.getElementById(elementId);
+        db[cat].forEach(item => {
+            const div = document.createElement('div');
+            div.className = `card ${item.c}`;
+            div.onclick = () => showDetail(item);
+            div.innerHTML = `<h3>${item.t}</h3><p>${item.s}</p>`;
+            list.appendChild(div);
+        });
+    }
+
+    function showDetail(item) {
+        const box = document.getElementById('detail-box');
+        box.innerHTML = `
+            <h2>${item.t}</h2>
+            <p>${item.d}</p>
+            ${item.url ? `<a href="${item.url}" target="_blank" style="color:var(--text-main); font-weight:bold; font-size:0.95rem;">→ Abrir recurso externo</a>` : ''}
+        `;
+        box.classList.add('open');
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function switchTab(id) {
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // Inicialización
+    renderCards('org', 'org-list');
+    renderCards('actor', 'actor-list');
+    renderCards('event', 'event-list');
+    renderCards('concept', 'concept-list');
+    
+    const tl = document.getElementById('tl-list');
+    db.timeline.forEach(i => {
+        tl.innerHTML += `<div class="tl-item"><p class="tl-date">${i.yr}</p><p class="tl-desc">${i.txt} <em>${i.em}</em></p></div>`;
+    });
+
+    const dl = document.getElementById('full-doc-list');
+    db.docs.forEach(i => {
+        const d = document.createElement('div');
+        d.className = `card ${i.c}`;
+        d.onclick = () => showDetail(i);
+        d.innerHTML = `<h3>${i.t}</h3><p>${i.s}</p>`;
+        dl.appendChild(d);
+    });
+</script>
+</body>
+</html>
