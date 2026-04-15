@@ -250,14 +250,6 @@
         tl.innerHTML += `<div class="tl-item"><p class="tl-date">${i.yr}</p><p class="tl-desc">${i.txt} <em>${i.em}</em></p></div>`;
     });
 
-    const dl = document.getElementById('full-doc-list');
-    db.docs.forEach(i => {
-        const d = document.createElement('div');
-        d.className = `card ${i.c}`;
-        d.onclick = () => showDetail(i);
-        d.innerHTML = `<h3>${i.t}</h3><p>${i.s}</p>`;
-        dl.appendChild(d);
-    });
 </script>
 </body>
 </html>
